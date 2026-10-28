@@ -142,22 +142,32 @@ DotNetBoxingBenchmarks/
 ├── Program.cs
 ├── DotNetBoxingBenchmarks.csproj
 ├── results/
-│   ├── BoxingBenchmarks-report.csv
-│   ├── BoxingBenchmarks-report.html
-│   ├── BoxingBenchmarks-report-github.md
-│   ├── CollectionBenchmarks-report.csv
-│   ├── CollectionBenchmarks-report.html
-│   ├── CollectionBenchmarks-report-github.md
-│   ├── JitOptimizationBenchmarks-report.csv
-│   ├── JitOptimizationBenchmarks-report.html
-│   ├── JitOptimizationBenchmarks-report-github.md
-│   └── JitOptimizationBenchmarks-asm.md
+│   ├── net9.0/
+│   │   └── BenchmarkRun-20261027-174644.log
+│   └── net10.0/
+│       ├── BenchmarkRun-20261027-180015.log
+│       ├── JitOptimizationBenchmarks-20261028-113707.log
+│       ├── BoxingBenchmarks-report.csv
+│       ├── BoxingBenchmarks-report.html
+│       ├── BoxingBenchmarks-report-github.md
+│       ├── CollectionBenchmarks-report.csv
+│       ├── CollectionBenchmarks-report.html
+│       ├── CollectionBenchmarks-report-github.md
+│       ├── JitOptimizationBenchmarks-report.csv
+│       ├── JitOptimizationBenchmarks-report.html
+│       ├── JitOptimizationBenchmarks-report-github.md
+│       └── JitOptimizationBenchmarks-asm.md
 ├── .gitignore
 ├── LICENSE.txt
 └── README.md
 ```
 
-The `results/` directory preserves the original benchmark reports in CSV, HTML, and Markdown formats, together with the RyuJIT disassembly.
+The `results/` directory preserves the original outputs, organized by runtime:
+
+- `results/net9.0/` holds the full BenchmarkDotNet log of the .NET 9.0.22 run (boxing and collection benchmarks). BenchmarkDotNet overwrites its CSV, HTML and Markdown exports on every run, so the .NET 9 summary tables survive only in this log.
+- `results/net10.0/` holds the .NET 10.0.14 exports (CSV, HTML, Markdown), the RyuJIT disassembly, and the logs of the main run and of the JIT optimization run.
+
+If you compare runtimes yourself, keep each run's `BenchmarkDotNet.Artifacts/BenchmarkRun-*.log` or copy the exports between runs.
 
 ## Related Article
 
