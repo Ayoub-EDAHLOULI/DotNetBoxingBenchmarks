@@ -62,7 +62,7 @@ mov eax,[rcx+8]
 ret
 ```
 
-RyuJIT completely eliminated the intermediate boxing operation.
+The intermediate boxing operation does not survive in the generated machine code.
 
 In contrast, `EscapingBox` contained an allocation-helper call:
 
@@ -70,13 +70,13 @@ In contrast, `EscapingBox` contained an allocation-helper call:
 call CORINFO_HELP_NEWSFAST
 ```
 
-**Key finding:** Allocation elimination is not the same as stack allocation. In this experiment, the unnecessary boxed object was eliminated entirely.
+**Key finding:** on the tested .NET 10 runtime, no boxed object remains in the final native code for `BoxAndUnbox`. The disassembly shows the result, not the JIT's intermediate steps: since .NET 9, the 64-bit JIT can stack-allocate non-escaping boxes and then optimize further, so this experiment does not establish whether the box was first treated as a stack allocation. It also does not show that the optimization is new in .NET 10, or that every non-escaping box is removed.
 
 BenchmarkDotNet reported `ZeroMeasurement` warnings for the first two methods. Their execution-time estimates should not be used for meaningful performance ratios.
 
 ## Requirements
 
-- .NET SDK supporting .NET 9 and .NET 10
+- .NET 10 SDK, with the .NET 9 runtime installed (the project targets `net9.0` and `net10.0`)
 - BenchmarkDotNet 0.15.8
 - Windows, Linux, or macOS with a supported .NET runtime
 
@@ -100,22 +100,22 @@ dotnet restore
 Run all benchmarks on .NET 9:
 
 ```bash
-dotnet run -c Release -f net9.0 -- --filter '*'
+dotnet run -c Release -f net9.0 -- --filter "*"
 ```
 
 Run all benchmarks on .NET 10:
 
 ```bash
-dotnet run -c Release -f net10.0 -- --filter '*'
+dotnet run -c Release -f net10.0 -- --filter "*"
 ```
 
 Run only the JIT optimization benchmarks:
 
 ```bash
-dotnet run -c Release -f net10.0 -- --filter '*JitOptimizationBenchmarks*'
+dotnet run -c Release -f net10.0 -- --filter "*JitOptimizationBenchmarks*"
 ```
 
-For meaningful results, use a Release build and avoid running other CPU-intensive applications during measurement.
+Double quotes work in Bash, PowerShell and the Windows command prompt. For meaningful results, use a Release build and avoid running other CPU-intensive applications during measurement.
 
 ## Benchmark Environment
 
@@ -142,22 +142,32 @@ DotNetBoxingBenchmarks/
 ├── Program.cs
 ├── DotNetBoxingBenchmarks.csproj
 ├── results/
-│   ├── BoxingBenchmarks-report.csv
-│   ├── BoxingBenchmarks-report.html
-│   ├── BoxingBenchmarks-report-github.md
-│   ├── CollectionBenchmarks-report.csv
-│   ├── CollectionBenchmarks-report.html
-│   ├── CollectionBenchmarks-report-github.md
-│   ├── JitOptimizationBenchmarks-report.csv
-│   ├── JitOptimizationBenchmarks-report.html
-│   ├── JitOptimizationBenchmarks-report-github.md
-│   └── JitOptimizationBenchmarks-asm.md
+│   ├── net9.0/
+│   │   └── BenchmarkRun-20261027-174644.log
+│   └── net10.0/
+│       ├── BenchmarkRun-20261027-180015.log
+│       ├── JitOptimizationBenchmarks-20261028-113707.log
+│       ├── BoxingBenchmarks-report.csv
+│       ├── BoxingBenchmarks-report.html
+│       ├── BoxingBenchmarks-report-github.md
+│       ├── CollectionBenchmarks-report.csv
+│       ├── CollectionBenchmarks-report.html
+│       ├── CollectionBenchmarks-report-github.md
+│       ├── JitOptimizationBenchmarks-report.csv
+│       ├── JitOptimizationBenchmarks-report.html
+│       ├── JitOptimizationBenchmarks-report-github.md
+│       └── JitOptimizationBenchmarks-asm.md
 ├── .gitignore
 ├── LICENSE.txt
 └── README.md
 ```
 
-The `results/` directory preserves the original benchmark reports in CSV, HTML, and Markdown formats, together with the RyuJIT disassembly.
+The `results/` directory preserves the original outputs, organized by runtime:
+
+- `results/net9.0/` holds the full BenchmarkDotNet log of the .NET 9.0.22 run (boxing and collection benchmarks). BenchmarkDotNet overwrites its CSV, HTML and Markdown exports on every run, so the .NET 9 summary tables survive only in this log.
+- `results/net10.0/` holds the .NET 10.0.14 exports (CSV, HTML, Markdown), the RyuJIT disassembly, and the logs of the main run and of the JIT optimization run.
+
+If you compare runtimes yourself, keep each run's `BenchmarkDotNet.Artifacts/BenchmarkRun-*.log` or copy the exports between runs.
 
 ## Related Article
 
