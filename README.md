@@ -62,7 +62,7 @@ mov eax,[rcx+8]
 ret
 ```
 
-RyuJIT completely eliminated the intermediate boxing operation.
+The intermediate boxing operation does not survive in the generated machine code.
 
 In contrast, `EscapingBox` contained an allocation-helper call:
 
@@ -70,13 +70,13 @@ In contrast, `EscapingBox` contained an allocation-helper call:
 call CORINFO_HELP_NEWSFAST
 ```
 
-**Key finding:** Allocation elimination is not the same as stack allocation. In this experiment, the unnecessary boxed object was eliminated entirely.
+**Key finding:** on the tested .NET 10 runtime, no boxed object remains in the final native code for `BoxAndUnbox`. The disassembly shows the result, not the JIT's intermediate steps: since .NET 9, the 64-bit JIT can stack-allocate non-escaping boxes and then optimize further, so this experiment does not establish whether the box was first treated as a stack allocation. It also does not show that the optimization is new in .NET 10, or that every non-escaping box is removed.
 
 BenchmarkDotNet reported `ZeroMeasurement` warnings for the first two methods. Their execution-time estimates should not be used for meaningful performance ratios.
 
 ## Requirements
 
-- .NET SDK supporting .NET 9 and .NET 10
+- .NET 10 SDK, with the .NET 9 runtime installed (the project targets `net9.0` and `net10.0`)
 - BenchmarkDotNet 0.15.8
 - Windows, Linux, or macOS with a supported .NET runtime
 
@@ -100,22 +100,22 @@ dotnet restore
 Run all benchmarks on .NET 9:
 
 ```bash
-dotnet run -c Release -f net9.0 -- --filter '*'
+dotnet run -c Release -f net9.0 -- --filter "*"
 ```
 
 Run all benchmarks on .NET 10:
 
 ```bash
-dotnet run -c Release -f net10.0 -- --filter '*'
+dotnet run -c Release -f net10.0 -- --filter "*"
 ```
 
 Run only the JIT optimization benchmarks:
 
 ```bash
-dotnet run -c Release -f net10.0 -- --filter '*JitOptimizationBenchmarks*'
+dotnet run -c Release -f net10.0 -- --filter "*JitOptimizationBenchmarks*"
 ```
 
-For meaningful results, use a Release build and avoid running other CPU-intensive applications during measurement.
+Double quotes work in Bash, PowerShell and the Windows command prompt. For meaningful results, use a Release build and avoid running other CPU-intensive applications during measurement.
 
 ## Benchmark Environment
 
