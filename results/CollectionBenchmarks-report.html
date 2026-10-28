@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>CollectionBenchmarks-20261027-180116</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6466/22H2/2022Update)
+Intel Core i7-6820HQ CPU 2.70GHz (Max: 2.71GHz) (Skylake), 1 CPU, 8 logical and 4 physical cores
+.NET SDK 10.0.403
+  [Host]     : .NET 10.0.14 (10.0.14, 10.0.1426.52326), X64 RyuJIT x86-64-v3
+  DefaultJob : .NET 10.0.14 (10.0.14, 10.0.1426.52326), X64 RyuJIT x86-64-v3
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method        </th><th>Count</th><th>Mean </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
+</tr>
+</thead><tbody><tr><td>NonGenericCollection</td><td>100</td><td>633.4 ns</td><td>10.40 ns</td><td>8.69 ns</td><td>1.00</td><td>0.02</td><td>0.7782</td><td>-</td><td>3256 B</td><td>1.00</td>
+</tr><tr><td>GenericCollection</td><td>100</td><td>194.0 ns</td><td>3.82 ns</td><td>3.58 ns</td><td>0.31</td><td>0.01</td><td>0.1090</td><td>-</td><td>456 B</td><td>0.14</td>
+</tr><tr><td>NonGenericCollection</td><td>1000</td><td>6,984.9 ns</td><td>139.77 ns</td><td>306.80 ns</td><td>1.00</td><td>0.06</td><td>7.6599</td><td>0.7629</td><td>32056 B</td><td>1.00</td>
+</tr><tr><td>GenericCollection</td><td>1000</td><td>1,749.0 ns</td><td>25.02 ns</td><td>20.89 ns</td><td>0.25</td><td>0.01</td><td>0.9689</td><td>-</td><td>4056 B</td><td>0.13</td>
+</tr><tr><td>NonGenericCollection</td><td>10000</td><td>83,564.6 ns</td><td>1,652.05 ns</td><td>1,836.25 ns</td><td>1.00</td><td>0.03</td><td>65.1855</td><td>21.7285</td><td>320056 B</td><td>1.00</td>
+</tr><tr><td>GenericCollection</td><td>10000</td><td>16,886.2 ns</td><td>332.89 ns</td><td>295.10 ns</td><td>0.20</td><td>0.01</td><td>9.5215</td><td>-</td><td>40056 B</td><td>0.13</td>
+</tr></tbody></table>
+</body>
+</html>
